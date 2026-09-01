@@ -8,7 +8,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
-
+from pathlib import Path
 
 # ------------------------------------------------------------
 # Page Configuration
@@ -20,35 +20,39 @@ st.set_page_config(
     layout="wide"
 )
 
-
 # ------------------------------------------------------------
 # Load Model
 # ------------------------------------------------------------
 
 @st.cache_resource
 def load_model():
-    return joblib.load("models/fraud_detection_model.pkl")
 
+    base_dir = Path(__file__).resolve().parent
+
+    model_path = (
+        base_dir
+        / "models"
+        / "fraud_detection_model.pkl"
+    )
+
+    return joblib.load(model_path)
 
 model = load_model()
-
 
 # ------------------------------------------------------------
 # Application Header
 # ------------------------------------------------------------
 
 st.title("💳 Credit Card Fraud Detection")
-st.markdown(
-    """
-    ### Machine Learning Fraud Detection System
 
-    Enter transaction details below to estimate whether the
-    transaction is **legitimate** or potentially **fraudulent**.
-    """
-)
+st.markdown("""
+### Machine Learning Fraud Detection System
+
+Enter transaction details below to estimate whether the transaction is
+**legitimate** or potentially **fraudulent**.
+""")
 
 st.divider()
-
 
 # ------------------------------------------------------------
 # Sidebar
@@ -56,22 +60,19 @@ st.divider()
 
 st.sidebar.title("About the Project")
 
-st.sidebar.info(
-    """
-    This project was developed as part of the
-    **CodSoft Machine Learning Internship**.
+st.sidebar.info("""
+This project was developed as part of the
+**CodSoft Machine Learning Internship**.
 
-    Models experimented with:
+Models experimented with:
 
-    • Logistic Regression  
-    • Decision Tree  
-    • Random Forest
+• Logistic Regression
+• Decision Tree
+• Random Forest
 
-    The final model was selected using
-    classification performance metrics.
-    """
-)
-
+The final model was selected using
+classification performance metrics.
+""")
 
 # ------------------------------------------------------------
 # Transaction Information
@@ -114,7 +115,6 @@ with col1:
         ["M", "F"]
     )
 
-
 with col2:
 
     transaction_hour = st.slider(
@@ -137,7 +137,6 @@ with col2:
         max_value=12,
         value=6
     )
-
 
 # ------------------------------------------------------------
 # Location Information
@@ -171,7 +170,6 @@ with col4:
         value=-75.0
     )
 
-
 # ------------------------------------------------------------
 # Customer Information
 # ------------------------------------------------------------
@@ -196,7 +194,6 @@ with col2:
         value="merchant_example"
     )
 
-
 # ------------------------------------------------------------
 # Distance Calculation
 # ------------------------------------------------------------
@@ -205,7 +202,6 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 
     lat1 = np.radians(lat1)
     lon1 = np.radians(lon1)
-
     lat2 = np.radians(lat2)
     lon2 = np.radians(lon2)
 
@@ -223,14 +219,12 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 
     return 6371 * c
 
-
 distance_km = haversine_distance(
     latitude,
     longitude,
     merchant_latitude,
     merchant_longitude
 )
-
 
 # ------------------------------------------------------------
 # Derived Features
@@ -244,7 +238,6 @@ is_night = int(
 )
 
 log_amt = np.log1p(amount)
-
 
 # ------------------------------------------------------------
 # Prediction
@@ -274,7 +267,6 @@ if st.button(
         "log_amt": [log_amt]
     })
 
-    # Make prediction
     prediction = model.predict(input_data)[0]
 
     probability = None
@@ -286,10 +278,6 @@ if st.button(
 
     st.divider()
 
-    # --------------------------------------------------------
-    # Risk Assessment
-    # --------------------------------------------------------
-
     if probability is not None:
 
         fraud_percentage = probability * 100
@@ -297,42 +285,32 @@ if st.button(
         if fraud_percentage >= 70:
 
             risk_level = "HIGH"
-            risk_message = "🚨 High Fraud Risk"
-
-            st.error(risk_message)
+            st.error("🚨 High Fraud Risk")
 
         elif fraud_percentage >= 30:
 
             risk_level = "MEDIUM"
-            risk_message = "⚠️ Medium Fraud Risk"
-
-            st.warning(risk_message)
+            st.warning("⚠️ Medium Fraud Risk")
 
         else:
 
             risk_level = "LOW"
-            risk_message = "✅ Low Fraud Risk"
+            st.success("✅ Low Fraud Risk")
 
-            st.success(risk_message)
-
-        # Metrics
         col1, col2 = st.columns(2)
 
         with col1:
-
             st.metric(
                 "Fraud Probability",
                 f"{fraud_percentage:.2f}%"
             )
 
         with col2:
-
             st.metric(
                 "Risk Level",
                 risk_level
             )
 
-        # Progress bar
         st.progress(
             min(probability, 1.0),
             text=f"Fraud Risk: {fraud_percentage:.2f}%"
@@ -352,15 +330,10 @@ if st.button(
                 "✅ Transaction Classified as Legitimate"
             )
 
-    # --------------------------------------------------------
-    # Distance Information
-    # --------------------------------------------------------
-
     st.info(
         f"📍 Customer-to-Merchant Distance: "
         f"{distance_km:.2f} km"
     )
-
 
 # ------------------------------------------------------------
 # Transaction Summary
@@ -379,7 +352,6 @@ with st.expander("View Transaction Details"):
             "Night Transaction": bool(is_night)
         }
     )
-
 
 # ------------------------------------------------------------
 # Footer
