@@ -1,0 +1,30 @@
+skill,category
+Python,Programming
+C++,Programming
+Java,Programming
+JavaScript,Programming
+HTML,Web Development
+CSS,Web Development
+React,Web Development
+SQL,Database
+MySQL,Database
+PostgreSQL,Database
+Pandas,Data Science
+NumPy,Data Science
+Matplotlib,Data Science
+Statistics,Data Science
+Machine Learning,Artificial Intelligence
+Deep Learning,Artificial Intelligence
+TensorFlow,Artificial Intelligence
+PyTorch,Artificial Intelligence
+Scikit-learn,Artificial Intelligence
+Git,Tools
+GitHub,Tools
+Docker,DevOps
+Linux,Operating Systems
+Networking,Cybersecurity
+Cybersecurity,Cybersecurity
+Data Structures,Computer Science
+Algorithms,Computer Science
+OOP,Computer Science
+APIs,Backend
